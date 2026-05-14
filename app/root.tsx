@@ -1,3 +1,4 @@
+import React from "react";
 import {
   isRouteErrorResponse,
   Links,
@@ -6,9 +7,21 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
+import { ThemeProvider, createTheme, CssBaseline, Container, Typography, Box } from "@mui/material";
 import type { Route } from "./+types/root";
 import "./app.css";
+
+// Create a custom MUI theme (optional)
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#1976d2", // Default MUI primary color
+    },
+    secondary: {
+      main: "#dc004e", // Default MUI secondary color
+    },
+  },
+});
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,16 +46,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
-        <ScrollRestoration />
-        <Scripts />
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          {children}
+          <ScrollRestoration />
+          <Scripts />
+        </ThemeProvider>
       </body>
     </html>
   );
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <Container>
+      <Outlet />
+    </Container>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -62,14 +82,16 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
+    <Container sx={{ paddingTop: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        {message}
+      </Typography>
+      <Typography variant="body1">{details}</Typography>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <Box component="pre" sx={{ padding: 2, overflowX: "auto", backgroundColor: "#f5f5f5" }}>
           <code>{stack}</code>
-        </pre>
+        </Box>
       )}
-    </main>
+    </Container>
   );
 }
